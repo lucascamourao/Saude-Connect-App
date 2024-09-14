@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router';
-import React, { useState } from 'react';
-
-import { LoginIcon, TabBarIcon } from '@/components/navigation/TabBarIcon';
+import React from 'react';
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -13,9 +12,10 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-      }}>
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="Home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
@@ -28,25 +28,7 @@ export default function TabLayout() {
         options={{
           title: 'Conta',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'person-outline' : 'person-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="login"
-        options={{
-          title: 'Login',
-          tabBarIcon: ({ color, focused }) => (
-            <LoginIcon name={focused ? 'log-in-outline' : 'log-in-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="cadastro"
-        options={{
-          title: 'Cadastro',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'log-out-outline' : 'log-out-outline'} color={color} />
+            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
         }}
       />
