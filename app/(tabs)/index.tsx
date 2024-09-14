@@ -6,7 +6,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import MapView, { Marker } from 'react-native-maps';
 import { ListItem } from 'react-native-elements';
-import { Dimensions } from 'react-native';
 
 const healthUnits = [
   {
@@ -48,10 +47,8 @@ const healthUnits = [
 ];
 
 export default function HomeScreen() {
-  // variaveis de estado [var, var a ser mudada]
   const [search, setSearch] = useState('');
   const [filteredUnits, setFilteredUnits] = useState(healthUnits);
-  // Note: state variable should not be changed directly!
 
   const searchFilter = (text: string) => {
     setSearch(text);
@@ -69,7 +66,7 @@ export default function HomeScreen() {
   return (
 
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#f6f9fa', dark: '#fafafa' }}
       headerImage={
         <Image
           source={require('@/assets/images/saude_conn_logo.png')}
@@ -152,4 +149,3 @@ const styles = StyleSheet.create({
     marginTop: 10,
   }
 });
-
