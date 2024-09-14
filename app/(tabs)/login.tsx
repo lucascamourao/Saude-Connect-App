@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import CadastroScreen from './cadastro';
 
 type RootStackParamList = {
   login: undefined;
@@ -60,7 +61,9 @@ const LoginScreen = ({ navigation }: Props) => {
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('cadastro')}>
-        <Text style={styles.signupText}>Não tem conta ainda? <Text style={styles.linkText}>Clique aqui</Text></Text>
+        <Text style={styles.signupText}>
+          Não tem conta ainda? <Text style={styles.linkText}>Clique aqui</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    width: width * 0.5,
+    width: width * 0.8,
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    width: width * 0.5,
+    width: width * 0.8,
     height: 50,
     backgroundColor: '#007BFF',
     justifyContent: 'center',

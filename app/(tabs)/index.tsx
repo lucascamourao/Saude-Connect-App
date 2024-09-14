@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, TextInput, View, FlatList } from 'react-native';
+import { Image, StyleSheet, Platform, TextInput, View, FlatList, Dimensions } from 'react-native';
 import React, { useState } from 'react';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -46,6 +46,8 @@ const healthUnits = [
 
 ];
 
+const { width } = Dimensions.get('window');
+
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [filteredUnits, setFilteredUnits] = useState(healthUnits);
@@ -65,14 +67,12 @@ export default function HomeScreen() {
 
   return (
 
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#f6f9fa', dark: '#fafafa' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/saude_conn_logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
+    <View style={styles.container}>
+
+      <Image
+        source={require('@/assets/images/saude_conn_logo.png')}
+        style={styles.reactLogo}
+      />
 
       <View style={styles.container}>
         <TextInput
@@ -104,15 +104,15 @@ export default function HomeScreen() {
 
       </View>
 
-
-
-    </ParallaxScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   contentContainer: {
     flex: 1,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   searchBar: {
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: 2,
     marginBottom: 10,
     paddingHorizontal: 8,
   },
@@ -144,8 +144,12 @@ const styles = StyleSheet.create({
   },
   meuMapa: {
     height: 178,
-    width: 290,
+    width: width * 0.9,
     alignSelf: 'center',
     marginTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    resizeMode: 'contain', // Ajusta a imagem dentro dos limites sem distorção
+    // talvez vai precisar tirar. aqui é no caso de ser uma imagem
   }
 });

@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { LoginIcon, TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -28,7 +28,7 @@ export default function TabLayout() {
         options={{
           title: 'Conta',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'person-outline' : 'person-outline'} color={color} />
           ),
         }}
       />
@@ -37,16 +37,16 @@ export default function TabLayout() {
         options={{
           title: 'Login',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <LoginIcon name={focused ? 'log-in-outline' : 'log-in-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="cadastro"
         options={{
-          title: 'cadastro',
+          title: 'Cadastro',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'log-out-outline' : 'log-out-outline'} color={color} />
           ),
         }}
       />
