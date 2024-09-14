@@ -1,28 +1,14 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-
-type RootStackParamList = {
-  login: undefined;
-  tabs: undefined;
-  cadastro: undefined;
-};
-
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'login'>;
-type LoginScreenRouteProp = RouteProp<RootStackParamList, 'login'>;
-
-type Props = {
-  navigation: LoginScreenNavigationProp;
-  route: LoginScreenRouteProp;
-};
+import { useRouter } from 'expo-router';
 
 const users = [
   { email: '123@gmail.com', password: '12345' },
   { email: 'adm@gmail.com', password: 'admadmadm' },
 ];
 
-const LoginScreen = ({ navigation }: Props) => {
+const LoginScreen = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -30,7 +16,7 @@ const LoginScreen = ({ navigation }: Props) => {
     const user = users.find(user => user.email === email && user.password === password);
 
     if (user) {
-      navigation.navigate("tabs");
+      router.replace('/(tabs)/home'); 
     } else {
       alert('Erro, E-mail ou senha incorretos.');
     }
@@ -59,7 +45,7 @@ const LoginScreen = ({ navigation }: Props) => {
       <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('cadastro')}>
+      <TouchableOpacity onPress={() => router.push('/cadastro')}>
         <Text style={styles.signupText}>Não tem conta ainda? <Text style={styles.linkText}>Clique aqui</Text></Text>
       </TouchableOpacity>
     </View>

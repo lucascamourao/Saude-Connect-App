@@ -5,7 +5,7 @@ import { RouteProp } from '@react-navigation/native';
 
 type RootStackParamList = {
   cadastro: undefined;
-  login: undefined;
+  index: undefined;
 };
 
 type CadastroScreenNavigationProp = StackNavigationProp<RootStackParamList, 'cadastro'>;
@@ -23,14 +23,11 @@ const CadastroScreen = ({ navigation }: Props) => {
 
   const handleCadastro = () => {
     if (password !== confirmPassword) {
-      // Aqui exibe o alerta quando as senhas não coincidem
       alert('Erro, as senhas não coincidem');
       return;
     }
-
-    // Lógica de cadastro, como salvar no servidor ou localmente
     alert('Sucesso, Cadastro realizado com sucesso!');
-    navigation.navigate('login');
+    navigation.navigate('index');
   };
 
   return (
@@ -63,7 +60,7 @@ const CadastroScreen = ({ navigation }: Props) => {
       <TouchableOpacity style={styles.buttonContainer} onPress={handleCadastro}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('login')}>
+      <TouchableOpacity onPress={() => navigation.navigate('index')}>
         <Text style={styles.signupText}>Já tem conta? <Text style={styles.linkText}>Clique aqui</Text></Text>
       </TouchableOpacity>
     </View>
