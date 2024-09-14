@@ -1,23 +1,6 @@
 import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
 import { View, TextInput, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import CadastroScreen from './cadastro';
-
-type RootStackParamList = {
-  login: undefined;
-  tabs: undefined;
-  cadastro: undefined;
-};
-
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'login'>;
-type LoginScreenRouteProp = RouteProp<RootStackParamList, 'login'>;
-
-type Props = {
-  navigation: LoginScreenNavigationProp;
-  route: LoginScreenRouteProp;
-};
+import { useRouter } from 'expo-router';
 
 const users = [
   { email: '123@gmail.com', password: '12345' },
@@ -38,7 +21,6 @@ const LoginScreen = () => {
       alert('Erro, E-mail ou senha incorretos.');
     }
   };
-
   return (
     <View style={styles.container}>
       <Image
@@ -68,7 +50,6 @@ const LoginScreen = () => {
     </View>
   );
 };
-
 export default LoginScreen;
 
 const { width } = Dimensions.get('window');
@@ -87,7 +68,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    width: width * 0.8,
+    width: width * 0.5,
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
@@ -101,7 +82,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    width: width * 0.8,
+    width: width * 0.5,
     height: 50,
     backgroundColor: '#007BFF',
     justifyContent: 'center',
