@@ -7,12 +7,13 @@ const { width } = Dimensions.get('window');
 
 interface Estabelecimento {
   id: string;
-  nomeFantasia: string;
-  endereco: string;
-  bairro: string;
-  telefone: string;
-  latitude: number;
-  longitude: number;
+  nome_fantasia: string;
+  endereco_estabelecimento: string;
+  bairro_estabelecimento: string;
+  numero_telefone_estabelecimento: string;
+  numero_estabelecimento: string;
+  latitude_estabelecimento_decimo_grau: number;
+  longitude_estabelecimento_decimo_grau: number;
 }
 
 export default function HomeScreen() {
@@ -24,7 +25,7 @@ export default function HomeScreen() {
     setSearch(text);
 
     const newData = estabelecimentos.filter(item => {
-      const itemData = `${item.nomeFantasia.toUpperCase()} ${item.endereco.toUpperCase()}`;
+      const itemData = `${item.nome_fantasia?.toUpperCase()} ${item.endereco_estabelecimento?.toUpperCase()} ${item.bairro_estabelecimento?.toUpperCase()}`;
       const textData = text.toUpperCase();
       return itemData.indexOf(textData) > -1;
     });
@@ -88,12 +89,12 @@ export default function HomeScreen() {
 
         <FlatList
           data={filteredUnits}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
           renderItem={({ item }) => (
             <View style={styles.listItem}>
-              <Text style={styles.title}>{item.nomeFantasia}</Text>
-              <Text style={styles.subtitle}>Endereço: {item.endereco}</Text>
-              <Text style={styles.subtitle}>Telefone: {item.telefone}</Text>
+              <Text style={styles.title}>{item.nome_fantasia}</Text>
+              <Text style={styles.subtitle}>Endereço: {item.endereco_estabelecimento} {item.numero_estabelecimento}</Text>
+              <Text style={styles.subtitle}>Telefone: {item.numero_telefone_estabelecimento}</Text>
             </View>
           )}
           ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhum dado encontrado.</Text>}
