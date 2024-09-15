@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const users = [
-  { email: '123@gmail.com', password: '12345' },
-  { email: 'adm@gmail.com', password: 'admadmadm' },
-];
+interface AuthResponse {
+  token: string;
+}
 
 const LoginScreen = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    const user = users.find(user => user.email === email && user.password === password);
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post<AuthResponse>(
+        'https://443dcdec-e336-4a4f-9c44-1aae574bd8b8-00-3kkvxb9bk6khu.kirk.replit.dev/api/users/authentication/',
+        {
+          email: email,
+          password: password
+        }
+      );
 
-    if (user) {
+      // Agora o TypeScript sabe que response.data tem um token
+      const { token } = response.data;
+      console.log('Token recebido:', token); // Verifique o valor do token
+
+      if (token) {
+        await AsyncStorage.setItem('userToken', token);
+      } else {
+        console.log('Token não recebido');
+      }
       router.replace('/(tabs)/home');
-    } else {
-      alert('Erro, E-mail ou senha incorretos.');
+
+    } catch (error) {
+      console.log('Erro ao fazer login:', error);
+      alert('Erro, e-mail ou senha incorretos.');
     }
   };
+
   return (
     <View style={styles.container}>
       <Image
@@ -50,6 +69,7 @@ const LoginScreen = () => {
     </View>
   );
 };
+
 export default LoginScreen;
 
 const { width } = Dimensions.get('window');

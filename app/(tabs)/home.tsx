@@ -1,63 +1,30 @@
-import { Image, StyleSheet, Platform, TextInput, View, FlatList, Dimensions } from 'react-native';
-import React, { useState } from 'react';
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import MapView, { Marker } from 'react-native-maps';
-import { ListItem } from 'react-native-elements';
-
-const healthUnits = [
-  {
-    id: '1',
-    name: 'Unidade de Saúde 1',
-    description: 'Atendimento clínico geral e emergencial',
-    latitude: -23.55052,
-    longitude: -46.633308
-  },
-  {
-    id: '2',
-    name: 'Posto de Saúde 2',
-    description: 'Consultas pediátricas e ginecológicas',
-    latitude: -23.559616,
-    longitude: -46.631386
-  },
-  {
-    id: '3',
-    name: 'Posto de Saúde 3',
-    description: 'Consultas pediátricas e ginecológicas',
-    latitude: -23.559616,
-    longitude: -46.631386
-  },
-  {
-    id: '4',
-    name: 'Posto de Saúde 4',
-    description: 'Consultas pediátricas e ginecológicas',
-    latitude: -23.559616,
-    longitude: -46.631386
-  },
-  {
-    id: '5',
-    name: 'Posto de Saúde 5',
-    description: 'Atendimento clínico geral e emergencial',
-    latitude: -23.559616,
-    longitude: -46.631386
-  },
-
-];
+import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
+interface Estabelecimento {
+  id: string;
+  nomeFantasia: string;
+  endereco: string;
+  bairro: string;
+  telefone: string;
+  latitude: number;
+  longitude: number;
+}
+
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
-  const [filteredUnits, setFilteredUnits] = useState(healthUnits);
+  const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([]);
+  const [filteredUnits, setFilteredUnits] = useState<Estabelecimento[]>([]);
 
   const searchFilter = (text: string) => {
     setSearch(text);
 
-    // Filtra as unidades de saúde com base no texto de busca
-    const newData = healthUnits.filter(item => {
-      const itemData = `${item.name.toUpperCase()} ${item.description.toUpperCase()}`;
+    const newData = estabelecimentos.filter(item => {
+      const itemData = `${item.nomeFantasia.toUpperCase()} ${item.endereco.toUpperCase()}`;
       const textData = text.toUpperCase();
       return itemData.indexOf(textData) > -1;
     });
@@ -65,10 +32,42 @@ export default function HomeScreen() {
     setFilteredUnits(newData);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (!token) {
+          throw new Error('Token não encontrado');
+        }
+
+        const response = await axios.get(
+          'https://443dcdec-e336-4a4f-9c44-1aae574bd8b8-00-3kkvxb9bk6khu.kirk.replit.dev/api/establishments/',
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        // Verifique a estrutura dos dados recebidos
+        console.log('Dados recebidos da API:', response.data);
+
+        // Verifique se os dados são um array
+        if (Array.isArray(response.data)) {
+          setEstabelecimentos(response.data);
+          setFilteredUnits(response.data);
+        } else {
+          console.log('Resposta da API não é um array:', response.data);
+        }
+      } catch (error) {
+        console.log('Erro ao buscar estabelecimentos:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
-
     <View style={styles.container}>
-
       <Image
         source={require('@/assets/images/saude_conn_logo.png')}
         style={styles.reactLogo}
@@ -89,21 +88,19 @@ export default function HomeScreen() {
 
         <FlatList
           data={filteredUnits}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <ListItem bottomDivider>
-              <ListItem.Content>
-                <ListItem.Title>{item.name}</ListItem.Title>
-                <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
-                <ListItem.Subtitle>Localização: {item.latitude}, {item.longitude}</ListItem.Subtitle>
-              </ListItem.Content>
-            </ListItem>
+            <View style={styles.listItem}>
+              <Text style={styles.title}>{item.nomeFantasia}</Text>
+              <Text style={styles.subtitle}>Endereço: {item.endereco}</Text>
+              <Text style={styles.subtitle}>Telefone: {item.telefone}</Text>
+            </View>
           )}
+          ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhum dado encontrado.</Text>}
+          ListFooterComponent={<Text style={styles.footerMessage}>Fim da lista</Text>}
           style={styles.list}
         />
-
       </View>
-
     </View>
   );
 }
@@ -114,10 +111,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 10,
-  },
   searchBar: {
     height: 40,
     borderColor: 'gray',
@@ -125,31 +118,42 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 8,
   },
-  mapContainer: {
-    height: 300,
-    marginBottom: 10,
-  },
-  map: {
-    flex: 1,
+  meuMapa: {
+    height: 178,
+    width: width * 0.9,
+    alignSelf: 'center',
+    marginTop: 10,
+    resizeMode: 'contain',
   },
   list: {
-    flex: 1,
+    flexGrow: 1,
     marginVertical: 10,
-    maxHeight: 400,
   },
   reactLogo: {
     height: 178,
     width: 290,
     alignSelf: 'center',
   },
-  meuMapa: {
-    height: 178,
-    width: width * 0.9,
-    alignSelf: 'center',
-    marginTop: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    resizeMode: 'contain', // Ajusta a imagem dentro dos limites sem distorção
-    // talvez vai precisar tirar. aqui é no caso de ser uma imagem
-  }
+  listItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000000',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    fontSize: 16,
+  },
+  emptyMessage: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'gray',
+  },
+  footerMessage: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'gray',
+  },
 });
