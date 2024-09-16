@@ -1,7 +1,8 @@
-import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router'; // Importando useRouter
 
 const { width } = Dimensions.get('window');
 
@@ -14,12 +15,23 @@ interface Estabelecimento {
   numero_estabelecimento: string;
   latitude_estabelecimento_decimo_grau: number;
   longitude_estabelecimento_decimo_grau: number;
+  endereco_email_estabelecimento: string;
+  codigo_cep_estabelecimento: string;
+  descricao_turno_atendimento: string;
+  estabelecimento_faz_atendimento_ambulatorial_sus: string;
+  estabelecimento_possui_centro_cirurgico: boolean;
+  estabelecimento_possui_centro_obstetrico: boolean;
+  estabelecimento_possui_centro_neonatal: boolean;
+  estabelecimento_possui_atendimento_hospitalar: boolean;
+  estabelecimento_possui_servico_apoio: boolean;
+  estabelecimento_possui_atendimento_ambulatorial: boolean;
 }
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([]);
   const [filteredUnits, setFilteredUnits] = useState<Estabelecimento[]>([]);
+  const router = useRouter(); // Instância do router para navegação
 
   const searchFilter = (text: string) => {
     setSearch(text);
@@ -50,10 +62,8 @@ export default function HomeScreen() {
           }
         );
 
-        // Verifique a estrutura dos dados recebidos
         console.log('Dados recebidos da API:', response.data);
 
-        // Verifique se os dados são um array
         if (Array.isArray(response.data)) {
           setEstabelecimentos(response.data);
           setFilteredUnits(response.data);
@@ -66,6 +76,14 @@ export default function HomeScreen() {
     };
     fetchData();
   }, []);
+
+  // Função para navegar para a tela de detalhes
+  const handleDetailsPress = (estabelecimento: Estabelecimento) => {
+    router.push({
+      pathname: '/estabelecimento_info',
+      params: { estabelecimento: JSON.stringify(estabelecimento) }, // Enviando o estabelecimento como parâmetro
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -95,6 +113,10 @@ export default function HomeScreen() {
               <Text style={styles.title}>{item.nome_fantasia}</Text>
               <Text style={styles.subtitle}>Endereço: {item.endereco_estabelecimento} {item.numero_estabelecimento}</Text>
               <Text style={styles.subtitle}>Telefone: {item.numero_telefone_estabelecimento}</Text>
+              
+              <TouchableOpacity style={styles.detailsButton} onPress={() => handleDetailsPress(item)}>
+                <Text style={styles.detailsButtonText}>Ver mais informações</Text>
+              </TouchableOpacity>
             </View>
           )}
           ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhum dado encontrado.</Text>}
@@ -146,6 +168,20 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
+    marginVertical: 5,
+  },
+  detailsButton: {
+    backgroundColor: '#3498db',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignSelf: 'flex-start',
+    marginTop: 10,
+  },
+  detailsButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   emptyMessage: {
     textAlign: 'center',
