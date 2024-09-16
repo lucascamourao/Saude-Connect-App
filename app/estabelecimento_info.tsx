@@ -6,7 +6,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 interface Avaliacao {
   nota: number;
-  detail: string;
+  descricao: string;
 }
 
 export default function EstabelecimentoDetalhesScreen() {
@@ -18,46 +18,55 @@ export default function EstabelecimentoDetalhesScreen() {
   const [descricao, setDescricao] = useState('');
 
   const fetchAvaliacoes = async () => {
-    try {
-      if (!estabelecimentoData || !estabelecimentoData.id) {
-        console.error('ID do estabelecimento não encontrado.');
-        return;
-      }
-  
-      console.log('Buscando avaliações para ID:', estabelecimentoData.id);
-  
-      const token = await AsyncStorage.getItem('userToken');
-      
-      const response = await axios.get(
-        `https://443dcdec-e336-4a4f-9c44-1aae574bd8b8-00-3kkvxb9bk6khu.kirk.replit.dev/api/evaluations/${estabelecimentoData.id}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
-      );
-  
-      console.log('Resposta da API:', response.data);
-  
-      if (Array.isArray(response.data)) {
-        setAvaliacoes(response.data);
-      } else {
-        console.error('Dados de avaliações inválidos:', response.data);
-        setAvaliacoes([]);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar avaliações:', error);
+  try {
+    if (!estabelecimentoData || !estabelecimentoData.id) {
+      console.error('ID do estabelecimento não encontrado.');
+      return;
     }
-  };
+
+    console.log('Buscando avaliações para ID:', estabelecimentoData.id);
+
+    const token = await AsyncStorage.getItem('userToken');
+
+    const response = await axios.get(
+      `https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/evaluations/`,
+      {
+        params: {estabelecimento:  estabelecimentoData.id},
+        headers: {
+          'Authorization': `Token  ${token}`,
+        },
+      }
+    );
+
+    console.log('Resposta da API:', response.data);
+
+    if (Array.isArray(response.data)) {
+      setAvaliacoes(response.data);
+    } else {
+      console.error('Dados de avaliações inválidos:', response.data);
+      setAvaliacoes([]);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar avaliações:', error);
+  }
+};
 
   const handleAvaliacaoSubmit = async () => {
     const token = await AsyncStorage.getItem('userToken');
+    const id_usuario = await AsyncStorage.getItem('userId');
+
     if (!token) {
-      Alert.alert('Você precisa estar logado para enviar uma avaliação.');
+      alert('Você precisa estar logado para enviar uma avaliação.');
       return;
     }
-    if (!nota || !descricao) {
-      Alert.alert('Preencha todos os campos.');
+
+    if (!id_usuario) {
+      alert('Id não está sendo coletado.');
+      return;
+    }
+
+    if (!nota) {
+      alert('Coloque uma nota');
       return;
     }
 
@@ -68,24 +77,25 @@ export default function EstabelecimentoDetalhesScreen() {
       }
 
       await axios.post(
-        'https://443dcdec-e336-4a4f-9c44-1aae574bd8b8-00-3kkvxb9bk6khu.kirk.replit.dev/api/evaluations/',
+        'https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/evaluations/',
         {
-          estabelecimento_id: estabelecimentoData.id,
+          estabelecimento: estabelecimentoData.id,
+          usuario_avaliador: id_usuario,
           nota: parseFloat(nota),
           descricao,
         },
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Token  ${token}`,
           },
         }
       );
-      Alert.alert('Avaliação enviada com sucesso!');
+      alert('Avaliação enviada com sucesso!');
       setNota('');
       setDescricao('');
       fetchAvaliacoes(); 
     } catch (error) {
-      console.error('Erro ao enviar avaliação:', error);
+      console.error('Erro ao enviar avaliação:');
     }
   };
 
@@ -93,7 +103,7 @@ export default function EstabelecimentoDetalhesScreen() {
     if (estabelecimentoData) {
       fetchAvaliacoes();
     }
-  }, [estabelecimentoData]);
+  }, []);
 
   if (!estabelecimentoData) {
     return (
@@ -132,7 +142,7 @@ export default function EstabelecimentoDetalhesScreen() {
         renderItem={({ item }) => (
           <View style={styles.avaliacaoCard}>
             <Text style={styles.avaliacaoNota}>Nota: {item.nota}/5</Text>
-            <Text style={styles.avaliacaoDescricao}>{item.detail}</Text>
+            <Text style={styles.avaliacaoDescricao}>{item.descricao}</Text>
           </View>
         )}
         ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhuma avaliação encontrada.</Text>}
@@ -212,12 +222,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   avaliacaoNota: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 20,
+    color: '#000000', 
   },
   avaliacaoDescricao: {
-    fontSize: 14,
-    color: '#7f8c8d',
+    fontSize: 17, 
+    color: '#000000',
   },
   emptyMessage: {
     fontSize: 16,

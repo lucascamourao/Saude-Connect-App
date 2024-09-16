@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router'; // Importando useRouter
 
 const { width } = Dimensions.get('window');
 
+// Todos os campos que existem em estabelecimento
 interface Estabelecimento {
   id: string;
   nome_fantasia: string;
@@ -31,7 +32,7 @@ export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([]);
   const [filteredUnits, setFilteredUnits] = useState<Estabelecimento[]>([]);
-  const router = useRouter(); // Instância do router para navegação
+  const router = useRouter(); // navegação
 
   const searchFilter = (text: string) => {
     setSearch(text);
@@ -48,13 +49,14 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Pegar token
         const token = await AsyncStorage.getItem('userToken');
         if (!token) {
           throw new Error('Token não encontrado');
         }
 
         const response = await axios.get(
-          'https://443dcdec-e336-4a4f-9c44-1aae574bd8b8-00-3kkvxb9bk6khu.kirk.replit.dev/api/establishments/',
+          'https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/establishments/',
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -77,11 +79,11 @@ export default function HomeScreen() {
     fetchData();
   }, []);
 
-  // Função para navegar para a tela de detalhes
+  // Função para navegar para a tela com informações mais detalhadas do estabelecimento
   const handleDetailsPress = (estabelecimento: Estabelecimento) => {
     router.push({
       pathname: '/estabelecimento_info',
-      params: { estabelecimento: JSON.stringify(estabelecimento) }, // Enviando o estabelecimento como parâmetro
+      params: { estabelecimento: JSON.stringify(estabelecimento) }, // Enviando o id estabelecimento
     });
   };
 
@@ -156,6 +158,7 @@ const styles = StyleSheet.create({
     height: 178,
     width: 290,
     alignSelf: 'center',
+    marginBottom: 10,
   },
   listItem: {
     padding: 10,

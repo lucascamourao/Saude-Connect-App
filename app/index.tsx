@@ -6,6 +6,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthResponse {
   token: string;
+  id: string;
+  first_name: string;
+  last_name: string;
+  telefone: string;
+  email: string;
+  cpf: string;
+  username: string;
+  photo_url: string;
+  data_joined: string;
+  city: string;
+  state: string;
 }
 
 const LoginScreen = () => {
@@ -13,27 +24,46 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Guardar os dados para serem usados nas outras telas
+  const saveUserData = async (data: AuthResponse) => {
+    try {
+      await AsyncStorage.setItem('userToken', data.token);
+      await AsyncStorage.setItem('userId', data.id);
+      await AsyncStorage.setItem('userFirstname', data.first_name);
+      await AsyncStorage.setItem('userLastname', data.last_name);
+      await AsyncStorage.setItem('userPhone', data.telefone || '');
+      await AsyncStorage.setItem('userEmail', data.email);
+      await AsyncStorage.setItem('userCPF', data.cpf);
+      await AsyncStorage.setItem('userUsername', data.username);
+      await AsyncStorage.setItem('userPhotoUrl', data.photo_url);
+      await AsyncStorage.setItem('userDateJoined', data.data_joined);
+      await AsyncStorage.setItem('userCity', data.city);
+      await AsyncStorage.setItem('userState', data.state);
+      console.log('Dados de usuário salvos com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar os dados do usuário:', error);
+    }
+  };
+
   const handleLogin = async () => {
+    if (!email || !password) {
+      alert('Por favor, preencha todos os campos.');
+      return;
+    }
+
     try {
       const response = await axios.post<AuthResponse>(
-        'https://443dcdec-e336-4a4f-9c44-1aae574bd8b8-00-3kkvxb9bk6khu.kirk.replit.dev/api/users/authentication/',
+        'https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/users/authentication/',
         {
           email: email,
           password: password
         }
       );
 
-      // Agora o TypeScript sabe que response.data tem um token
-      const { token } = response.data;
-      console.log('Token recebido:', token); // Verifique o valor do token
-
-      if (token) {
-        await AsyncStorage.setItem('userToken', token);
-      } else {
-        console.log('Token não recebido');
-      }
+      const userData = response.data;
+      await saveUserData(userData);
+      
       router.replace('/(tabs)/home');
-
     } catch (error) {
       console.log('Erro ao fazer login:', error);
       alert('Erro, e-mail ou senha incorretos.');
@@ -52,6 +82,8 @@ const LoginScreen = () => {
         placeholder="E-mail"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
