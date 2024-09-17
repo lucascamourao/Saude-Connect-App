@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'; // Importando useRouter
+import MapView, { Marker, UrlTile, PROVIDER_DEFAULT } from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
 
 const { width } = Dimensions.get('window');
 
@@ -32,6 +34,7 @@ export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([]);
   const [filteredUnits, setFilteredUnits] = useState<Estabelecimento[]>([]);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const router = useRouter(); // navegação
 
   const searchFilter = (text: string) => {
@@ -77,6 +80,20 @@ export default function HomeScreen() {
       }
     };
     fetchData();
+
+    Geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (error) => {
+        console.log('Erro ao obter localização:', error);
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+
   }, []);
 
   // Função para navegar para a tela com informações mais detalhadas do estabelecimento
@@ -115,7 +132,7 @@ export default function HomeScreen() {
               <Text style={styles.title}>{item.nome_fantasia}</Text>
               <Text style={styles.subtitle}>Endereço: {item.endereco_estabelecimento} {item.numero_estabelecimento}</Text>
               <Text style={styles.subtitle}>Telefone: {item.numero_telefone_estabelecimento}</Text>
-              
+
               <TouchableOpacity style={styles.detailsButton} onPress={() => handleDetailsPress(item)}>
                 <Text style={styles.detailsButtonText}>Ver mais informações</Text>
               </TouchableOpacity>
@@ -149,6 +166,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 10,
     resizeMode: 'contain',
+  },
+  map: {
+    flex: 1,
   },
   list: {
     flexGrow: 1,
