@@ -16,6 +16,7 @@ const CadastroScreen = () => {
   const [state, setState] = useState('');
   const router = useRouter();
 
+  // Pega as informações escritas pelo usuário e faz o cadastro da pessoa
   const handleCadastro = async () => {
     if (password !== confirmPassword) {
       alert('Erro, as senhas não coincidem');

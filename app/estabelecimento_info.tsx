@@ -17,6 +17,7 @@ export default function EstabelecimentoDetalhesScreen() {
   const [nota, setNota] = useState('');
   const [descricao, setDescricao] = useState('');
 
+  // Pega as avaliações de um estabelecimento
   const fetchAvaliacoes = async () => {
   try {
     if (!estabelecimentoData || !estabelecimentoData.id) {
@@ -51,6 +52,7 @@ export default function EstabelecimentoDetalhesScreen() {
   }
 };
 
+  // Fazer uma avaliação em cima de um estabelecimento
   const handleAvaliacaoSubmit = async () => {
     const token = await AsyncStorage.getItem('userToken');
     const id_usuario = await AsyncStorage.getItem('userId');
@@ -99,6 +101,7 @@ export default function EstabelecimentoDetalhesScreen() {
     }
   };
 
+  // inicia a página chamando a lista de avaliações
   useEffect(() => {
     if (estabelecimentoData) {
       fetchAvaliacoes();

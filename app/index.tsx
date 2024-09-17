@@ -45,6 +45,7 @@ const LoginScreen = () => {
     }
   };
 
+  // API recebe os dados e autoriza ou não o login
   const handleLogin = async () => {
     if (!email || !password) {
       alert('Por favor, preencha todos os campos.');

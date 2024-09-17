@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions, TouchableOpacity, Linking} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,6 +34,7 @@ export default function HomeScreen() {
   const [filteredUnits, setFilteredUnits] = useState<Estabelecimento[]>([]);
   const router = useRouter(); // navegação
 
+  // Filtrar os estabelecimentos pela search bar
   const searchFilter = (text: string) => {
     setSearch(text);
 
@@ -46,6 +47,7 @@ export default function HomeScreen() {
     setFilteredUnits(newData);
   };
 
+  // Receber da API os dados 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,8 +66,6 @@ export default function HomeScreen() {
           }
         );
 
-        console.log('Dados recebidos da API:', response.data);
-
         if (Array.isArray(response.data)) {
           setEstabelecimentos(response.data);
           setFilteredUnits(response.data);
@@ -79,11 +79,18 @@ export default function HomeScreen() {
     fetchData();
   }, []);
 
-  // Função para navegar para a tela com informações mais detalhadas do estabelecimento
+  // Função para enviar o usuário para o google maps com o endereço do estabelecimento
+  const handleOpenGoogleMaps = (endereco: string, numero: string) => {
+    const formattedAddress = `${endereco} ${numero}`.replace(/\s+/g, '+');
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${formattedAddress}`;
+    Linking.openURL(url).catch(err => console.error('Erro ao abrir o Google Maps:', err));
+  };
+
+  // enviar o id do estabelecimento
   const handleDetailsPress = (estabelecimento: Estabelecimento) => {
     router.push({
       pathname: '/estabelecimento_info',
-      params: { estabelecimento: JSON.stringify(estabelecimento) }, // Enviando o id estabelecimento
+      params: { estabelecimento: JSON.stringify(estabelecimento) }, 
     });
   };
 
@@ -102,10 +109,10 @@ export default function HomeScreen() {
           value={search}
         />
 
-        <Image
+        {/* <Image
           source={require('@/assets/images/map_google.webp')}
           style={styles.meuMapa}
-        />
+        /> */}
 
         <FlatList
           data={filteredUnits}
@@ -115,10 +122,18 @@ export default function HomeScreen() {
               <Text style={styles.title}>{item.nome_fantasia}</Text>
               <Text style={styles.subtitle}>Endereço: {item.endereco_estabelecimento} {item.numero_estabelecimento}</Text>
               <Text style={styles.subtitle}>Telefone: {item.numero_telefone_estabelecimento}</Text>
-              
-              <TouchableOpacity style={styles.detailsButton} onPress={() => handleDetailsPress(item)}>
-                <Text style={styles.detailsButtonText}>Ver mais informações</Text>
-              </TouchableOpacity>
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.detailsButton} onPress={() => handleDetailsPress(item)}>
+                  <Text style={styles.detailsButtonText}>Ver mais informações</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.routeButton}
+                  onPress={() => handleOpenGoogleMaps(item.endereco_estabelecimento, item.numero_estabelecimento)}
+                >
+                  <Text style={styles.routeButtonText}>Pegar a rota</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
           ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhum dado encontrado.</Text>}
@@ -135,6 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     paddingRight: 10,
+    backgroundColor: '#fff',
   },
   searchBar: {
     height: 40,
@@ -164,6 +180,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#000000',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    marginBottom: 10, 
   },
   title: {
     fontSize: 18,
@@ -178,13 +197,28 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 5,
-    alignSelf: 'flex-start',
-    marginTop: 10,
+    marginRight: 10, 
   },
   detailsButtonText: {
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  routeButton: {
+    backgroundColor: '#2ecc71',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  routeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   emptyMessage: {
     textAlign: 'center',
