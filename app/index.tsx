@@ -54,7 +54,7 @@ const LoginScreen = () => {
 
     try {
       const response = await axios.post<AuthResponse>(
-        'https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/users/authentication/',
+        'https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/users/authentication/',
         {
           email: email,
           password: password

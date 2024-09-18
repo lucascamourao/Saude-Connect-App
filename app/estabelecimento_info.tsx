@@ -30,7 +30,7 @@ export default function EstabelecimentoDetalhesScreen() {
     const token = await AsyncStorage.getItem('userToken');
 
     const response = await axios.get(
-      `https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/evaluations/`,
+      `https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/evaluations/`,
       {
         params: {estabelecimento:  estabelecimentoData.id},
         headers: {
@@ -79,7 +79,7 @@ export default function EstabelecimentoDetalhesScreen() {
       }
 
       await axios.post(
-        'https://8c2ed63a-fe28-41a3-ae65-b31b19d7712b-00-n9ng9dyljd28.picard.replit.dev/api/evaluations/',
+        'https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/evaluations/',
         {
           estabelecimento: estabelecimentoData.id,
           usuario_avaliador: id_usuario,
