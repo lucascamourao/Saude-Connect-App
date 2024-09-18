@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, Image, Dimensions, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import styles from '../styles/cadastro';
 
 const CadastroScreen = () => {
   // Variáveis a serem escritas pelo usuário.
@@ -16,12 +17,19 @@ const CadastroScreen = () => {
   const [state, setState] = useState('');
   const router = useRouter();
 
-  // Pega as informações escritas pelo usuário e faz o cadastro da pessoa
-  const handleCadastro = async () => {
+  // validação se as senhas são iguais
+  const validatePasswords = () => {
     if (password !== confirmPassword) {
       alert('Erro, as senhas não coincidem');
-      return;
+      return false;
     }
+    return true;
+  };
+
+  // Envio dos dados de cadastro
+  const handleCadastro = async () => {
+    if (!validatePasswords()) return;
+
     try {
       const response = await axios.post(
         'https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/users/',
@@ -126,68 +134,3 @@ const CadastroScreen = () => {
 export default CadastroScreen;
 
 const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 16,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    color: '#0e0d0d',
-  },
-  input: {
-    width: width * 0.8,
-    height: 40,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 10,
-    backgroundColor: 'white',
-    borderRadius: 5,
-  },
-  reactLogo: {
-    width: 300,
-    height: 150,
-    resizeMode: 'contain',
-    marginBottom: 30,
-  },
-  buttonContainer: {
-    width: width * 0.8,
-    height: 50,
-    backgroundColor: '#007BFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  signupText: {
-    marginTop: 20,
-    fontSize: 16,
-  },
-  linkText: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  formContainer: {
-    width: width * 0.8,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  inputHalf: {
-    width: '48%',
-  },
-});

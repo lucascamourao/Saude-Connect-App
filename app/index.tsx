@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, Image, Dimensions, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import styles from '../styles/index';
 
 interface AuthResponse {
   token: string;
@@ -106,53 +107,3 @@ const LoginScreen = () => {
 export default LoginScreen;
 
 const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  input: {
-    width: width * 0.5,
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
-  reactLogo: {
-    width: 350,
-    height: 200,
-    resizeMode: 'contain',
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    width: width * 0.5,
-    height: 50,
-    backgroundColor: '#007BFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  signupText: {
-    marginTop: 20,
-    fontSize: 16,
-  },
-  linkText: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-});
