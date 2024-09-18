@@ -1,9 +1,11 @@
-import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions, TouchableOpacity, Linking} from 'react-native';
+import { Image, StyleSheet, Text, TextInput, View, FlatList, Dimensions, TouchableOpacity, Linking } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'; // Importando useRouter
-import styles from '../../styles/cadastro';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import styles from '../../styles/home';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +35,9 @@ export default function HomeScreen() {
   const [search, setSearch] = useState('');
   const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([]);
   const [filteredUnits, setFilteredUnits] = useState<Estabelecimento[]>([]);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter(); // navegação
 
   // Filtrar os estabelecimentos pela search bar
@@ -80,6 +85,25 @@ export default function HomeScreen() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        setLoading(false);
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      console.log('Current Location:', location);  // para depuração
+      setLocation(location);
+      setLoading(false);
+    };
+
+    getLocation();
+  }, []);
+
+
   // Função para enviar o usuário para o google maps com o endereço do estabelecimento
   const handleOpenGoogleMaps = (endereco: string, numero: string) => {
     const formattedAddress = `${endereco} ${numero}`.replace(/\s+/g, '+');
@@ -91,7 +115,7 @@ export default function HomeScreen() {
   const handleDetailsPress = (estabelecimento: Estabelecimento) => {
     router.push({
       pathname: '/estabelecimento_info',
-      params: { estabelecimento: JSON.stringify(estabelecimento) }, 
+      params: { estabelecimento: JSON.stringify(estabelecimento) },
     });
   };
 
@@ -114,6 +138,7 @@ export default function HomeScreen() {
           source={require('@/assets/images/map_google.webp')}
           style={styles.meuMapa}
         /> */}
+
 
         <FlatList
           data={filteredUnits}
