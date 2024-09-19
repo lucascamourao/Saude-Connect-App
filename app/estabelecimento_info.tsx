@@ -1,14 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, ScrollView, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
-import styles from '../styles/estalecimento_info';
+
+interface Estabelecimento {
+  id: string;
+  nome_fantasia: string;
+  endereco_estabelecimento: string;
+  numero_estabelecimento: string;
+  bairro_estabelecimento: string;
+  numero_telefone_estabelecimento: string;
+  endereco_email_estabelecimento: string;
+  codigo_cep_estabelecimento: string;
+  descricao_turno_atendimento: string;
+  estabelecimento_faz_atendimento_ambulatorial_sus: string;
+  estabelecimento_possui_centro_cirurgico: boolean;
+  estabelecimento_possui_centro_obstetrico: boolean;
+  estabelecimento_possui_centro_neonatal: boolean;
+  estabelecimento_possui_atendimento_hospitalar: boolean;
+  estabelecimento_possui_servico_apoio: boolean;
+  estabelecimento_possui_atendimento_ambulatorial: boolean;
+}
 
 interface Avaliacao {
   nota: number;
   descricao: string;
 }
+
+// Pegar o token de autorização
+const gettoken = async (): Promise<string | null> => {
+  return await AsyncStorage.getItem('userToken');
+};
+
+// pegar o id do usuário
+const getid = async (): Promise<string | null> => {
+  return await AsyncStorage.getItem('userId');
+};
+
+const fetchAvaliacoes = async (id: string, token: string) => {
+  try {
+    const response = await axios.get<Avaliacao[]>(
+      `https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/evaluations/`,
+      {
+        params: { estabelecimento: id },
+        headers: { 'Authorization': `Token ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar avaliações:', error);
+    return [];
+  }
+};
+
+const enviarAvaliacao = async (idEstabelecimento: string, idUsuario: string, nota: number, descricao: string, token: string) => {
+  try {
+    await axios.post(
+      `https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/evaluations/`,
+      { estabelecimento: idEstabelecimento, usuario_avaliador: idUsuario, nota, descricao },
+      { headers: { 'Authorization': `Token ${token}` } }
+    );
+  } catch (error) {
+    console.error('Erro ao enviar avaliação:', error);
+  }
+};
 
 export default function EstabelecimentoDetalhesScreen() {
   const { estabelecimento } = useLocalSearchParams();
@@ -18,96 +74,40 @@ export default function EstabelecimentoDetalhesScreen() {
   const [nota, setNota] = useState('');
   const [descricao, setDescricao] = useState('');
 
-  // Pega as avaliações de um estabelecimento
-  const fetchAvaliacoes = async () => {
-  try {
-    if (!estabelecimentoData || !estabelecimentoData.id) {
-      console.error('ID do estabelecimento não encontrado.');
+  useEffect(() => {
+    const loadAvaliacoes = async () => {
+      if (estabelecimentoData?.id) {
+        const token = await gettoken();
+        if (token) {
+          const avaliacoes = await fetchAvaliacoes(estabelecimentoData.id, token);
+          setAvaliacoes(avaliacoes);
+        }
+      }
+    };
+    loadAvaliacoes();
+  }, [estabelecimentoData]);
+
+  const handleAvaliacaoSubmit = async () => {
+    if (!nota || !descricao) {
+      alert('Por favor, preencha todos os campos.');
       return;
     }
 
-    console.log('Buscando avaliações para ID:', estabelecimentoData.id);
+    const token = await gettoken();
+    const idUsuario = await getid();
 
-    const token = await AsyncStorage.getItem('userToken');
-
-    const response = await axios.get(
-      `https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/evaluations/`,
-      {
-        params: {estabelecimento:  estabelecimentoData.id},
-        headers: {
-          'Authorization': `Token  ${token}`,
-        },
-      }
-    );
-
-    console.log('Resposta da API:', response.data);
-
-    if (Array.isArray(response.data)) {
-      setAvaliacoes(response.data);
-    } else {
-      console.error('Dados de avaliações inválidos:', response.data);
-      setAvaliacoes([]);
-    }
-  } catch (error) {
-    console.error('Erro ao buscar avaliações:', error);
-  }
-};
-
-  // Fazer uma avaliação em cima de um estabelecimento
-  const handleAvaliacaoSubmit = async () => {
-    const token = await AsyncStorage.getItem('userToken');
-    const id_usuario = await AsyncStorage.getItem('userId');
-
-    if (!token) {
+    if (!token || !idUsuario || !estabelecimentoData?.id) {
       alert('Você precisa estar logado para enviar uma avaliação.');
       return;
     }
 
-    if (!id_usuario) {
-      alert('Id não está sendo coletado.');
-      return;
-    }
-
-    if (!nota) {
-      alert('Coloque uma nota');
-      return;
-    }
-
-    try {
-      if (!estabelecimentoData || !estabelecimentoData.id) {
-        console.error('ID do estabelecimento não encontrado.');
-        return;
-      }
-
-      await axios.post(
-        'https://5020ce9e-a549-4ad2-924b-90be61572903-00-ac9j32we209.picard.replit.dev/api/evaluations/',
-        {
-          estabelecimento: estabelecimentoData.id,
-          usuario_avaliador: id_usuario,
-          nota: parseFloat(nota),
-          descricao,
-        },
-        {
-          headers: {
-            'Authorization': `Token  ${token}`,
-          },
-        }
-      );
-      alert('Avaliação enviada com sucesso!');
-      setNota('');
-      setDescricao('');
-      fetchAvaliacoes(); 
-    } catch (error) {
-      console.error('Erro ao enviar avaliação:');
-    }
+    await enviarAvaliacao(estabelecimentoData.id, idUsuario, parseFloat(nota), descricao, token);
+    alert('Avaliação enviada com sucesso!');
+    setNota('');
+    setDescricao('');
+    const avaliacoes = await fetchAvaliacoes(estabelecimentoData.id, token);
+    setAvaliacoes(avaliacoes);
   };
-
-  // inicia a página chamando a lista de avaliações
-  useEffect(() => {
-    if (estabelecimentoData) {
-      fetchAvaliacoes();
-    }
-  }, []);
 
   if (!estabelecimentoData) {
     return (
@@ -128,7 +128,6 @@ export default function EstabelecimentoDetalhesScreen() {
         <Text style={styles.info}>CEP: {estabelecimentoData.codigo_cep_estabelecimento}</Text>
         <Text style={styles.sectionTitle}>Turno de Atendimento:</Text>
         <Text style={styles.info}>{estabelecimentoData.descricao_turno_atendimento}</Text>
-
         <Text style={styles.sectionTitle}>Outros Detalhes:</Text>
         <Text style={styles.info}>Atendimento Ambulatorial SUS: {estabelecimentoData.estabelecimento_faz_atendimento_ambulatorial_sus}</Text>
         <Text style={styles.info}>Centro Cirúrgico: {estabelecimentoData.estabelecimento_possui_centro_cirurgico ? 'Sim' : 'Não'}</Text>
@@ -172,3 +171,81 @@ export default function EstabelecimentoDetalhesScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9f9f9',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 20,
+  },
+  info: {
+    fontSize: 18,
+    color: '#34495e',
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2980b9',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  avaliacaoCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  avaliacaoNota: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  avaliacaoDescricao: {
+    fontSize: 16,
+    color: '#2c3e50',
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#e74c3c',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+});

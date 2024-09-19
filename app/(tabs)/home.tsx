@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'; // Importando useRouter
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import styles from '../../styles/home';
 
 const { width } = Dimensions.get('window');
 
@@ -21,7 +20,7 @@ interface Estabelecimento {
   longitude_estabelecimento_decimo_grau: number;
   endereco_email_estabelecimento: string;
   codigo_cep_estabelecimento: string;
-  descricao_turno_atendimento: string;
+  descricao_turno_atendimento: string;  
   estabelecimento_faz_atendimento_ambulatorial_sus: string;
   estabelecimento_possui_centro_cirurgico: boolean;
   estabelecimento_possui_centro_obstetrico: boolean;
@@ -139,7 +138,6 @@ export default function HomeScreen() {
           style={styles.meuMapa}
         /> */}
 
-
         <FlatList
           data={filteredUnits}
           keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
@@ -170,3 +168,83 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: '#fff',
+  },
+  searchBar: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 2,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+  },
+  list: {
+    flexGrow: 1,
+    marginVertical: 10,
+  },
+  reactLogo: {
+    height: 178,
+    width: 290,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  listItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#000000',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    fontSize: 16,
+    marginVertical: 5,
+  },
+  detailsButton: {
+    backgroundColor: '#3498db',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  detailsButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  routeButton: {
+    backgroundColor: '#2ecc71',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  routeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  emptyMessage: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'gray',
+  },
+  footerMessage: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'gray',
+  },
+});

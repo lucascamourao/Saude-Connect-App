@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, Image, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
-import styles from '../styles/cadastro';
 
 const CadastroScreen = () => {
   // Variáveis a serem escritas pelo usuário.
@@ -18,7 +17,7 @@ const CadastroScreen = () => {
   const router = useRouter();
 
   // validação se as senhas são iguais
-  const validatePasswords = () => {
+  const validarPasswords = () => {
     if (password !== confirmPassword) {
       alert('Erro, as senhas não coincidem');
       return false;
@@ -28,7 +27,7 @@ const CadastroScreen = () => {
 
   // Envio dos dados de cadastro
   const handleCadastro = async () => {
-    if (!validatePasswords()) return;
+    if (!validarPasswords()) return;
 
     try {
       const response = await axios.post(
@@ -134,3 +133,68 @@ const CadastroScreen = () => {
 export default CadastroScreen;
 
 const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#0e0d0d',
+  },
+  input: {
+    width: width * 0.8,
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
+    borderRadius: 5,
+  },
+  reactLogo: {
+    width: 300,
+    height: 150,
+    resizeMode: 'contain',
+    marginBottom: 30,
+  },
+  buttonContainer: {
+    width: width * 0.8,
+    height: 50,
+    backgroundColor: '#007BFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  signupText: {
+    marginTop: 20,
+    fontSize: 16,
+  },
+  linkText: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  formContainer: {
+    width: width * 0.8,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  inputHalf: {
+    width: '48%',
+  },
+});
