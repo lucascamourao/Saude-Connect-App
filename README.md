@@ -1,78 +1,74 @@
+
 # Saúde Connect
 
-Saúde Connect é um aplicativo desenvolvido para dispositivos Android e iOS utilizando React Native e Django. O objetivo do aplicativo é auxiliar os usuários a encontrar postos de saúde próximos, relatar faltas de medicamentos ou serviços e acessar informações de saúde de maneira eficiente.
+O **Saúde Connect** é um aplicativo desenvolvido em React Native e Django, projetado para ajudar os usuários a encontrar unidades de saúde próximas, reportar faltas e acessar serviços de saúde de forma eficiente.
 
 ## Funcionalidades
 
-- **Geolocalização:** O aplicativo utiliza a localização do usuário para fornecer informações sobre os postos de saúde mais próximos, agilizando o acesso a serviços de saúde.
-- **Relato de Faltas:** Usuários podem relatar a falta de medicamentos ou serviços específicos nos postos de saúde, contribuindo para a melhoria dos serviços de saúde na região.
-- **Lista de Postos de Saúde:** Exibe uma lista de postos de saúde com nome, descrição e localização.
-- **Busca:** Possui uma barra de busca para facilitar a localização de postos de saúde específicos.
+- **Busca de Unidades de Saúde:** Pesquise e visualize unidades de saúde próximas.
+- **Geolocalização:** Acesse um mapa que mostra sua localização e as unidades de saúde nas proximidades.
+- **Registro de Faltas:** Informe sobre faltas em unidades de saúde.
+- **Interface Amigável:** Navegação intuitiva com design responsivo.
 
-## Tecnologias Utilizadas 💻
+## Tecnologias Utilizadas
 
-- **Front-end:** React Native (Typescript e Javascript)
-- **Back-end:** Django
-- **Mapa de Geolocalização:** Integração com serviços de mapas para exibição de postos de saúde próximos.
+- **Frontend:** React Native
+- **Backend:** Django
+- **Banco de Dados:** -
+- **Autenticação:** -
+- **Mapas:** react-native-maps
+
+## Pré-requisitos
+
+- Node.js
+- Expo CLI
+- Python
+- Django
+- PostgreSQL
 
 ## Instalação
 
-### Pré-requisitos
+1. Clone o repositório do frontend:
+   ```bash
+   git clone https://github.com/lucascamourao/saude-connect.git
+   cd saude-connect
+   ```
 
-- Node.js
-- Python 3.x
-- React Native CLI
-- Django
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-### Passos para Instalação
+3. Clone o repositório do backend:
+   ```bash
+   git clone https://github.com/augustogpauladev/saude-connect-backend.git
+   cd saude-connect-backend
+   ```
 
-1. **Clone o repositório:**
+4. Instale as dependências do backend:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-    ```bash
-    git clone https://github.com/seu-usuario/saude-connect.git
-    cd saude-connect
-    ```
+5. Execute as migrações do banco de dados:
+   ```bash
+   python manage.py migrate
+   ```
 
-2. **Instale as dependências do front-end:**
+6. Inicie o servidor do backend:
+   ```bash
+   python manage.py runserver
+   ```
 
-    ```bash
-    cd frontend
-    npm install
-    ```
-
-3. **Instale as dependências do back-end:**
-
-    ```bash
-    cd ../backend
-    pip install -r requirements.txt
-    ```
-
-4. **Configure as variáveis de ambiente e o banco de dados no back-end.**
-
-5. **Inicie o servidor Django:**
-
-    ```bash
-    python manage.py runserver
-    ```
-
-6. **Inicie o aplicativo React Native:**
-
-    ```bash
-    cd ../frontend
-    npx react-native run-android  # Para Android
-    npx react-native run-ios      # Para iOS
-    ```
-
-## Contribuição
-
-Contribuições são bem-vindas! Se você deseja contribuir com o projeto, siga os passos abaixo:
-
-1. Faça um fork do repositório.
-2. Crie uma branch para a sua feature (`git checkout -b feature/nova-feature`).
-3. Commit suas alterações (`git commit -m 'Adiciona nova feature'`).
-4. Faça push para a branch (`git push origin feature/nova-feature`).
-5. Abra um Pull Request.
+7. Inicie o aplicativo React Native:
+   ```bash
+   npm start
+   ```
 
 ## Licença
 
-Este projeto está licenciado sob a Apache License 2.0. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob a MIT License. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## Link do Backend
+
+Para mais informações sobre o backend, acesse o repositório: [saude-connect-backend](https://github.com/augustogpauladev/saude-connect-backend)
